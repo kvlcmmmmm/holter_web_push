@@ -13,6 +13,7 @@ model_path = "model_12122023.h5"
 
 model = keras.models.load_model(model_path, compile=False)
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+value_to_letter = {0: "A", 1: "Q", 2: "V", 3: "Z"}
 temp_directory = tempfile.gettempdir()
 
 app = Flask(__name__)
@@ -50,12 +51,14 @@ def upload_file():
                 windows, r_peaks_new = ecg_processor.window_ecg_signal(df_filtered, r_peaks, pre_peak=576, post_peak=624)
                 windows_df = ecg_processor.create_dataframe_from_windows_fast(windows)
                 predIdxs = ecg_processor.predict(model, windows_df)
+                modified_predIdxs = [value_to_letter[value] for value in predIdxs]
+
             finally:
                 os.remove(file_path)  # Geçici dosyayı sil
 
             # JSON yanıtının oluşturulması
             response = {
-                "predIdxs": [int(x) for x in predIdxs.tolist()],
+                "predIdxs": modified_predIdxs,
                 "index": [int(x) for x in r_peaks_new],
                 "signal": [float(x) for x in df_filtered.tolist()]
             }
