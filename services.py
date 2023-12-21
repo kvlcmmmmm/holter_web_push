@@ -3,6 +3,7 @@ import numpy as np
 import biosppy
 import neurokit2 as nk
 from io import StringIO
+from scipy.interpolate import interp1d
 
 class ECGProcessor:
 
@@ -16,11 +17,10 @@ class ECGProcessor:
         
         # StringIO kullanarak metin veriyi bir dataframe'e dönüştürün
         df = pd.read_csv(StringIO(data_text), sep='\t', skiprows=2)
+        df = df.iloc[:, 1]
+
         print(df)
 
-        # İlk sütunu seçme
-        df = df.iloc[:, 1]
-    
         return df
     
 
@@ -34,6 +34,30 @@ class ECGProcessor:
             return None
 
 
+    def signal_resample(self, df, frequency):
+        fs_original = frequency  # tahmin edilecek verinin örnekleme frekansı
+        fs_new = 360  # yeni örnekleme frekansı (Model 360 Hz data ile eğitildiği için.)
+
+        ekg_original = df  #EKG sinyali
+
+        # Orijinal sinyal dizinleri (indeksler)
+        indices_original = np.arange(len(ekg_original))
+
+        # Interpolasyon faktörünü hesaplama
+        interpolation_factor = fs_new / fs_original
+
+        # Yeni interpolasyon için dizinler
+        indices_new = np.linspace(0, len(ekg_original) - 1, int(len(ekg_original) * interpolation_factor))
+
+        # Lineer interpolasyon uygulama
+        interpolator = interp1d(indices_original, ekg_original, kind='linear')
+        ekg_interpolated_without_time = interpolator(indices_new)
+
+        df = ekg_interpolated_without_time
+
+        return df
+
+
     @staticmethod
     def process_ecg_data(df):
         # Process ECG data
@@ -43,6 +67,7 @@ class ECGProcessor:
         df_filtered= nk.rescale(df_filtered, to=[0, 1], scale=None)
 
         return r_peaks, df_filtered
+
 
     @staticmethod
     def window_ecg_signal(ecg_signal, r_peaks, pre_peak=576, post_peak=624):
@@ -74,6 +99,7 @@ class ECGProcessor:
 
         return windows, r_peaks_new
 
+
     @staticmethod
     def create_dataframe_from_windows_fast(windows):
         # DataFrame creation function
@@ -93,6 +119,7 @@ class ECGProcessor:
         df = pd.DataFrame(array)
 
         return df
+
 
     def predict(self, model, df):
         # Predictions
