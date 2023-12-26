@@ -5,6 +5,8 @@ import tempfile
 import keras
 import uuid
 from services import ECGProcessor
+from flask_cors import CORS
+
 
 ecg_processor = ECGProcessor()
 
@@ -17,6 +19,7 @@ value_to_letter = {0: "A", 1: "Q", 2: "V", 3: "Z"}
 temp_directory = tempfile.gettempdir()
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
