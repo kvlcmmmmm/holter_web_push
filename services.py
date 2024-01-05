@@ -100,7 +100,8 @@ class ECGProcessor:
         data = biosppy.signals.ecg.ecg(signal=df, sampling_rate=360, show=False)
         r_peaks = data['rpeaks']
         df_filtered = df
-        df_filtered_draw= nk.rescale(df_filtered, to=[0, 1], scale=None)
+        df_filtered_draw = data["filtered"]
+        df_filtered_draw= nk.rescale(df_filtered_draw, to=[0, 1], scale=None)
 
         return r_peaks, df_filtered, df_filtered_draw
 
