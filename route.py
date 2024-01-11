@@ -11,7 +11,7 @@ from flask_cors import CORS
 ecg_processor = ECGProcessor()
 
 # Modelin yüklenmesi ve hazırlanması
-model_path = "model_04012024_360_scaled.h5"
+model_path = "model_04012024_original_label_synthetic.h5"
 
 model = keras.models.load_model(model_path, compile=False)
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
