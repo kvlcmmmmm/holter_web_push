@@ -65,7 +65,7 @@ def upload_file():
                 windows, r_peaks_new = ecg_processor.window_ecg_signal(df_filtered, rpeaks, pre_peak=144, post_peak=216)
                 windows_df = ecg_processor.create_dataframe_from_windows_fast(windows)
                 windows_df_normalized = ecg_processor.normalize_rows(windows_df)
-                predIdxs = ecg_processor.predict(model, windows_df_normalized)
+                predIdxs = ecg_processor.predict(model, windows_df)
                 modified_predIdxs = [value_to_letter[value] for value in predIdxs]
 
             finally:
