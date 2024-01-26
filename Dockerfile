@@ -13,7 +13,7 @@ COPY . .
 
 # Model dosyasını konteynere kopyala
 # Model dosyanızın Dockerfile ile aynı dizinde olduğundan emin olun
-COPY model_12122023.h5 ./
+COPY model_04012024_original_label_synthetic.h5 ./
 
 # Uygulamayı çalıştır
 CMD ["python", "./route.py"]
